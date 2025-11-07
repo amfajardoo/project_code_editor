@@ -1,0 +1,83 @@
+# --------------------------------------------------------
+# Global
+# --------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.temp
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+out/
+tmp/
+temp/
+
+# --------------------------------------------------------
+# Node / Backend
+# --------------------------------------------------------
+code-editor-server/node_modules/
+code-editor-server/dist/
+code-editor-server/.tsbuildinfo
+
+# Logs
+code-editor-server/*.log
+code-editor-server/logs/
+
+# Runtime files
+code-editor-server/pids
+code-editor-server/*.pid
+code-editor-server/*.seed
+code-editor-server/*.pid.lock
+
+# Coverage
+code-editor-server/coverage/
+
+# --------------------------------------------------------
+# Angular / Frontend
+# --------------------------------------------------------
+code-editor/node_modules/
+code-editor/dist/
+code-editor/.angular/
+code-editor/.angular/cache/
+code-editor/.tsbuildinfo
+
+# Angular builder cache
+code-editor/.swcrc
+code-editor/.parcel-cache
+
+# IDE automation
+code-editor/.idea/
+code-editor/.vscode/
+
+# --------------------------------------------------------
+# IDEs, Editors
+# --------------------------------------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# --------------------------------------------------------
+# OS
+# --------------------------------------------------------
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# --------------------------------------------------------
+# Misc
+# --------------------------------------------------------
+*.swp
+*.swo
+*.orig
+*.cache
+.cache/
