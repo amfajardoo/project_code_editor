@@ -1,0 +1,53 @@
+<div class="app-container">
+  <header class="app-header">
+    <div class="header-left">
+      <h1 id="title">Collaborative Editor</h1>
+      <div class="room-status">
+        <span>Room:</span>
+        <span class="room-id-value">{{ roomId() }}</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="home-button" (click)="goToHome()">Back to Home</button>
+      <label for="language-options" id="language-label">
+        Language:
+        <select
+          id="language-options"
+          (change)="onLanguageChange($event)"
+          [value]="currentLanguage()"
+        >
+          <option value="javascript">JavaScript</option>
+          <option value="typescript">TypeScript</option>
+          <option value="python">Python</option>
+          <option value="html">HTML</option>
+          <option value="css">CSS</option>
+          <option value="json">JSON</option>
+          <option value="markdown">Markdown</option>
+        </select>
+      </label>
+    </div>
+  </header>
+  <main class="app-main">
+    <app-editor
+      #editor
+      [roomId]="roomId()"
+      [initialContent]="initialCode()"
+      [language]="currentLanguage()"
+      [lineNumbers]="true"
+      [lineWrapping]="false"
+      [tabSize]="2"
+      (contentChange)="onContentChange($event)"
+      (cursorPositionChange)="onCursorChange($event)"
+      (editorReady)="onEditorReady($event)"
+    />
+  </main>
+
+  <footer class="app-footer">
+    <div class="status">
+      <span>Characters: {{ contentLength() }}</span>
+      <span>Lines: {{ lineCount() }}</span>
+      <span>Cursor: {{ cursorPosition() }}</span>
+    </div>
+  </footer>
+</div>

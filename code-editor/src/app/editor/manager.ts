@@ -48,6 +48,9 @@ export class Manager {
   }
 
   changeLanguage(newLanguage: SupportedLanguage): void {
+    if (this.isEditorInitialized) {
+      this.destroyEditor();
+    }
     if (this.editorView) {
       this.codeMirrorSetup.changeLanguage(this.editorView, newLanguage);
     }

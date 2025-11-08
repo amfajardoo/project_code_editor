@@ -1,0 +1,39 @@
+<div class="container">
+  <div class="home-card">
+    <h1 class="card-title">Gemini Collaborative Editor</h1>
+    <p class="card-subtitle">Create a new room or join an existing one to start coding.</p>
+
+    <div class="content-area">
+      <a [routerLink]="['/editor', createNewRoomId()]" class="create-button">
+        🚀 Create Random Room
+      </a>
+
+      <div class="divider">
+        <span class="divider-text">OR</span>
+      </div>
+
+      <div class="join-area">
+        <input
+          type="text"
+          [(ngModel)]="joinRoomId"
+          (keyup.enter)="joinRoom()"
+          placeholder="Enter Room ID (e.g., Rando123)"
+          class="join-input"
+        />
+
+        <button
+          (click)="joinRoom()"
+          [disabled]="!isValidRoomId()"
+          [class.join-button-enabled]="isValidRoomId()"
+          [class.join-button-disabled]="!isValidRoomId()"
+        >
+          Join Room
+        </button>
+
+        @if(!isValidRoomId() && joinRoomId()) {
+        <p class="error-message">Room ID must be at least 3 characters long.</p>
+        }
+      </div>
+    </div>
+  </div>
+</div>

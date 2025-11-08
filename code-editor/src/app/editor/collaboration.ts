@@ -48,7 +48,7 @@ export class Collaboration {
     this.provider = undefined;
   }
 
-  private notifyContentChange(content: string): void {
-    console.log('Content changed:', content);
+  private notifyContentChange(_content: string): void {
+    // console.log('Content changed:', content);
   }
 }

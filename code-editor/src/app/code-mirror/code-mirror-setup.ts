@@ -11,6 +11,7 @@ export class CodeMirrorSetup {
   #languageCompartment = new Compartment();
   #tabSizeCompartment = new Compartment();
   #lineWrappingCompartment = new Compartment();
+  #extensionCompartment = new Compartment();
 
   /**
    * Creates and returns a new EditorState configured with extensions built from the given configuration
@@ -93,7 +94,7 @@ export class CodeMirrorSetup {
     extensions.push(this.#languageCompartment.of(languageExtension || []));
     extensions.push(this.#tabSizeCompartment.of(config.tabSize ? tabSizeConfig(config.tabSize) : []));
     extensions.push(this.#lineWrappingCompartment.of(config.lineWrapping ? lineWrappingConfig() : []));
-    extensions.push(...(config.extensions || []));
+    extensions.push(this.#extensionCompartment.of(config.extensions || []));
 
     return extensions;
   }

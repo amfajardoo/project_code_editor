@@ -25,7 +25,7 @@ export class Editor {
   lineNumbers = input<boolean>(true);
   lineWrapping = input<boolean>(false);
   tabSize = input<number>(2);
-  roomId = input<string>('default-session');
+  roomId = input.required<string>();
 
   contentChange = output<string>();
   cursorPositionChange = output<number>();
@@ -90,9 +90,7 @@ export class Editor {
 
   private handleEditorUpdate(_view: EditorView): void {
     const content = this.manager.getEditorContent();
-    if (content) {
-      this.contentChange.emit(content);
-    }
+    this.contentChange.emit(content ?? '');
 
     const cursorPos = this.manager.getCursorPosition();
     if (cursorPos !== undefined) {
