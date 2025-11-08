@@ -93,6 +93,7 @@ export class CodeMirrorSetup {
     extensions.push(this.#languageCompartment.of(languageExtension || []));
     extensions.push(this.#tabSizeCompartment.of(config.tabSize ? tabSizeConfig(config.tabSize) : []));
     extensions.push(this.#lineWrappingCompartment.of(config.lineWrapping ? lineWrappingConfig() : []));
+    extensions.push(...(config.extensions || []));
 
     return extensions;
   }

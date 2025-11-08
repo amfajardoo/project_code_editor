@@ -38,6 +38,7 @@ export interface EditorConfig {
   lineWrapping: boolean;
   highlightActiveLine: boolean;
   tabSize: number;
+  extensions?: Extension[];
 }
 
 export interface CompletionContext {
