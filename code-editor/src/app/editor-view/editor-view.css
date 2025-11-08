@@ -26,12 +26,60 @@
   font-weight: 700;
   margin: 0;
 }
+.user-name {
+  display: flex;
+  padding-top: .5rem;
+  gap: .5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.connected-users {
+  margin-top: 1rem;
+}
+
+.connected-users h4 {
+  margin: 0 0 0.5rem 0;
+}
+
+.connected-users ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.connected-users li {
+  padding: 0.25rem 0;
+  font-weight: 500;
+}
 .room-status {
   margin-top: 5px;
   font-size: 14px;
   gap: .5rem;
   display: flex;
   align-items: center;
+  cursor: pointer;
+}
+.copy-room-id {
+  display: grid;
+}
+.copy-room-id small {
+  font-style: italic;
+  font-size: 12px
 }
 .room-id-value {
   font-weight: 600;
@@ -40,6 +88,7 @@
   background-color: #e9f5ff;
   border-radius: 6px;
   border: 1px solid #cce5ff;
+  cursor: pointer;
 }
 .controls {
   display: flex;

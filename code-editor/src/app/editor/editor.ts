@@ -31,6 +31,8 @@ export class Editor {
   cursorPositionChange = output<number>();
   editorReady = output<EditorView>();
 
+  private editorInitialized = false;
+
   constructor() {
     effect(() => {
       const element = this.editorContainer();
@@ -64,28 +66,49 @@ export class Editor {
   private async initializeEditor(parent: HTMLElement): Promise<void> {
     this.collaboration.initialize(this.roomId());
 
-    const collabExtensions = [
-      ...this.collaboration.getCollaborationExtensions(),
-      autocompletion({ override: [this.autocomplete.getCompletionSource()] }),
-    ];
+    const provider = this.collaboration.getProvider();
+    if (!provider) {
+      console.error('❌ No se pudo obtener el provider');
+      return;
+    }
 
-    const config = {
-      language: this.language(),
-      lineNumbers: this.lineNumbers(),
-      lineWrapping: this.lineWrapping(),
-      tabSize: this.tabSize(),
-      extensions: collabExtensions,
+    const createEditor = async () => {
+      if (this.editorInitialized) {
+        return;
+      }
+
+      const collabExtensions = [
+        ...this.collaboration.getCollaborationExtensions(),
+        autocompletion({ override: [this.autocomplete.getCompletionSource()] }),
+      ];
+
+      const config = {
+        language: this.language(),
+        lineNumbers: this.lineNumbers(),
+        lineWrapping: this.lineWrapping(),
+        tabSize: this.tabSize(),
+        extensions: collabExtensions,
+      };
+
+      const initialContent = this.collaboration.getCurrentContent();
+
+      const view = await this.manager.initializeEditor(parent, config, initialContent, collabExtensions, (view) =>
+        this.handleEditorUpdate(view)
+      );
+
+      this.editorInitialized = true;
+      this.editorReady.emit(view);
     };
 
-    const view = await this.manager.initializeEditor(
-      parent,
-      config,
-      this.collaboration.getCurrentContent(),
-      collabExtensions,
-      (view) => this.handleEditorUpdate(view)
-    );
-
-    this.editorReady.emit(view);
+    if (provider.synced) {
+      await createEditor();
+    } else {
+      provider.once('sync', async (isSynced: boolean) => {
+        if (isSynced) {
+          await createEditor();
+        }
+      });
+    }
   }
 
   private handleEditorUpdate(_view: EditorView): void {
@@ -118,5 +141,6 @@ export class Editor {
   ngOnDestroy(): void {
     this.collaboration.disconnect();
     this.manager.destroyEditor();
+    this.editorInitialized = false;
   }
 }

@@ -2,9 +2,20 @@
   <header class="app-header">
     <div class="header-left">
       <h1 id="title">Collaborative Editor</h1>
-      <div class="room-status">
-        <span>Room:</span>
-        <span class="room-id-value">{{ roomId() }}</span>
+      <div
+        class="room-status"
+        [cdkCopyToClipboard]="roomId()"
+        (cdkCopyToClipboardCopied)="copied.set(true)"
+      >
+        <p class="copy-room-id">
+          <span>Room:</span>
+          <small>{{ copied() ? 'Copied' : 'Click to copy' }}</small>
+        </p>
+        <button class="room-id-value">{{ roomId() }}</button>
+      </div>
+      <div class="user-name">
+        <span>User:</span>
+        <span [style.color]="userInfo().color">{{ userInfo().name }}</span>
       </div>
     </div>
 
@@ -39,7 +50,6 @@
       [tabSize]="2"
       (contentChange)="onContentChange($event)"
       (cursorPositionChange)="onCursorChange($event)"
-      (editorReady)="onEditorReady($event)"
     />
   </main>
 
@@ -48,6 +58,14 @@
       <span>Characters: {{ contentLength() }}</span>
       <span>Lines: {{ lineCount() }}</span>
       <span>Cursor: {{ cursorPosition() }}</span>
+    </div>
+    <div class="connected-users">
+      <h4>Users in this room ({{ connectedUsers().length }}):</h4>
+      <ul>
+        @for (user of connectedUsers(); track user.name; let index = $index) {
+        <li [style.color]="user.color">({{ index + 1 }}) {{ user.name }}</li>
+        }
+      </ul>
     </div>
   </footer>
 </div>
