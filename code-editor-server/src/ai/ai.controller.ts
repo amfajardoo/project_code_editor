@@ -15,10 +15,8 @@ export class AiController {
       return { suggestion: '' };
     }
 
-    // El controlador llama al servicio para obtener la sugerencia
     const suggestion = await this.aiService.generateCompletion(body.codeContext);
 
-    // Formato de respuesta que el frontend consumirá
-    return { suggestion: suggestion };
+    return { suggestion };
   }
 }

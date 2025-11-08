@@ -18,18 +18,23 @@ export class AiService {
 
     const prompt = CODE_COMPLETION_PROMPT(codeContext);
 
-    const response = await this.ai.models.generateContent({
-      model: model,
-      contents: prompt,
-      config: {
-        maxOutputTokens: 50,
-      },
-    });
+    try {
+      const response = await this.ai.models.generateContent({
+        model: model,
+        contents: prompt,
+        config: {
+          maxOutputTokens: 50,
+        },
+      });
 
-    if (!response.text) {
-      return "";
+    
+      if (!response.text) {
+        return "";
+      }
+
+      return response.text.trim();
+    } catch (error) {
+      return '';
     }
-
-    return response.text.trim();
   }
 }
