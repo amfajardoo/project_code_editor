@@ -63,7 +63,7 @@
       <h4>Users in this room ({{ connectedUsers().length }}):</h4>
       <ul>
         @for (user of connectedUsers(); track user.name; let index = $index) {
-        <li [style.color]="user.color">({{ index + 1 }}) {{ user.name }}</li>
+        <li [style.color]="user.color">{{ user.name }}</li>
         }
       </ul>
     </div>
