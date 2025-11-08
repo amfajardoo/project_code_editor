@@ -28,7 +28,7 @@ npm install
 Create a `.env` file in the root directory of the project with the following variables:
 
 ```properties
-GEMINI_API_KEY=your_api_key_here
+GEMINI_API_KEY="your_api_key_here"
 PORT=3000  # optional, defaults to 3000
 ```
 
