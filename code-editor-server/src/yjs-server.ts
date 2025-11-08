@@ -33,7 +33,8 @@ class WSSharedDoc extends Y.Doc {
       this.conns.forEach((_, conn) => {
         if (conn !== origin && conn.readyState === WebSocket.OPEN) {
           conn.send(message, (err) => {
-            if (err) {}
+            if (err) {
+            }
           });
         }
       });
@@ -52,7 +53,8 @@ class WSSharedDoc extends Y.Doc {
       this.conns.forEach((_, conn) => {
         if (conn !== origin && conn.readyState === WebSocket.OPEN) {
           conn.send(message, (err) => {
-            if (err) {}
+            if (err) {
+            }
           });
         }
       });
@@ -74,14 +76,15 @@ const wss = new WebSocketServer({ port: PORT });
 wss.on("connection", (conn: WebSocket, req: IncomingMessage) => {
   const urlPath = req.url || "/";
   const roomName = urlPath.substring(1) || "default";
-    
+   
   const doc = getYDoc(roomName);
   doc.conns.set(conn, new Set());
 
   const send = (message: Uint8Array) => {
     if (conn.readyState === WebSocket.OPEN) {
       conn.send(message, (err) => {
-        if (err) { }
+        if (err) {
+        }
       });
     }
   };
@@ -101,6 +104,7 @@ wss.on("connection", (conn: WebSocket, req: IncomingMessage) => {
       switch (messageType) {
         case messageSync: {
           encoding.writeVarUint(encoder, messageSync);
+          const syncMessageType = syncProtocol.readSyncMessage(decoder, encoder, doc, conn);
           
           if (encoding.length(encoder) > 1) {
             send(encoding.toUint8Array(encoder));
@@ -117,11 +121,10 @@ wss.on("connection", (conn: WebSocket, req: IncomingMessage) => {
           break;
         }
 
-        default:
-          return;
+        default:;
       }
     } catch (err) {
-			// Error processing the message
+
     }
   });
 
@@ -159,10 +162,8 @@ wss.on("connection", (conn: WebSocket, req: IncomingMessage) => {
   });
 
   conn.on("error", (error) => {
-    // error trying to connect
   });
 });
 
 wss.on("error", (error) => {
-  // yjs connection error
 });
