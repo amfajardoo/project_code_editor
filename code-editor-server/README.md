@@ -40,6 +40,8 @@ PORT=3000  # optional, defaults to 3000
 4. Copy the generated API key
 5. Paste it in your `.env` file as the value for `GEMINI_API_KEY`
 
+or follow the detailed instructions at [Google's official documentation](https://ai.google.dev/gemini-api/docs/api-key).
+
 ### Available Environment Variables
 
 - `GEMINI_API_KEY`: Required. The API key for Google's Gemini AI service
