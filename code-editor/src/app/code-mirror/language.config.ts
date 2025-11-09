@@ -33,7 +33,6 @@ export async function getLanguageExtension(languageName: string): Promise<Extens
   const language = LanguageDescription.matchLanguageName(languages, languageName);
 
   if (!language) {
-    console.warn(`Language "${languageName}" not found`);
     return null;
   }
 

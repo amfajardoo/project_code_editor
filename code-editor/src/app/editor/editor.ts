@@ -18,19 +18,19 @@ export class Editor {
   private collaboration = inject(Collaboration);
 
   editorContainer = viewChild<ElementRef<HTMLElement>>('editorContainer');
-
-  initialContent = input<string>('');
+  
   language = input<SupportedLanguage>('javascript');
-  currentLanguage = linkedSignal(this.language);
   lineNumbers = input<boolean>(true);
   lineWrapping = input<boolean>(false);
   tabSize = input<number>(2);
   roomId = input.required<string>();
 
+  currentLanguage = linkedSignal(this.language);
+  
   contentChange = output<string>();
   cursorPositionChange = output<number>();
   editorReady = output<EditorView>();
-
+  
   private editorInitialized = false;
 
   constructor() {
@@ -68,7 +68,6 @@ export class Editor {
 
     const provider = this.collaboration.getProvider();
     if (!provider) {
-      console.error('❌ No se pudo obtener el provider');
       return;
     }
 

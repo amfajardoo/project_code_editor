@@ -14,7 +14,6 @@ import { Editor } from '../editor/editor';
 export default class EditorView {
   private router = inject(Router);
   roomId = input.required<string>();
-  initialCode = signal('');
   currentLanguage = signal('typescript');
   cursorPosition = signal(0);
   content = signal('');
