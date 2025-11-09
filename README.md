@@ -86,4 +86,5 @@ B_API -->|Completion Payload| A
 
 ## 👤 Author
 
-[Andres M. Fajardo] - [LinkedIn](https://www.linkedin.com/in/andres-fajardo-5a57ba126/)
+This project is maintained by ![avatar](https://github.com/amfajardoo.png?size=32) [amfajardoo](https://github.com/amfajardoo).
+[LinkedIn](https://www.linkedin.com/in/andres-fajardo-5a57ba126/)
