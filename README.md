@@ -39,7 +39,7 @@ The editor is built on a modern full-stack architecture that ensures **real-time
 
 | Component | Primary Technology | Key Purpose |
 | :--- | :--- | :--- |
-| **Frontend (Client)** | **Angular 17+, TypeScript** | User interface, CodeMirror 6, session management. |
+| **Frontend (Client)** | **Angular 20, TypeScript** | User interface, CodeMirror 6, session management. |
 | **Code Editor** | **CodeMirror 6, `y-codemirror.next`** | Editor component with collaborative editing support (using Yjs). |
 | **State/Sync** | **Yjs, `y-websocket`** | Handles Shared Types and Operational Transformation (OT/CRDT) synchronization logic. |
 | **Backend (Server)** | **NestJS/Node.js (TypeScript)** | WebSocket Gateway, Yjs Provider server, Secure Proxy for the Gemini API. |
@@ -64,15 +64,6 @@ graph TD
 * **Real-time Synchronization:** Utilizes WebSockets and Yjs for seamless, character-level collaborative editing.
 * **AI Code Completion:** Secure integration with the Gemini API via a backend proxy for intelligent code suggestions.
 * **Collaborator Awareness:** Displays other users' cursors and selections within the CodeMirror editor.
-
----
-
-## 🧪 Testing & Architecture
-
-* **Architecture Overview:** The high-level architecture explaining the communication between Angular, NestJS, and Gemini API is detailed in the **[Backend README](./code-editor-server/README.md)**.
-* **Testing Features:** Instructions on how to test collaborative editing and AI completion are provided in the **[Frontend README](./code-editor/README.md)**.
-
----
 
 ## 👤 Author
 
