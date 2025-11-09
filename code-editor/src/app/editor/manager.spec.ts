@@ -2,17 +2,14 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { EditorState } from '@codemirror/state';
 import type { EditorView } from '@codemirror/view';
-import { CodeMirrorSetup } from '../code-mirror/code-mirror-setup'; // ✅ Importa el token real
+import { CodeMirrorSetup } from '../code-mirror/code-mirror-setup';
 import type { EditorConfig, SupportedLanguage } from '../code-mirror/config';
 import { Manager } from './manager';
 
-// Mock Implementation for CodeMirrorSetup
 class MockCodeMirrorSetup {
-  // Mock return values for methods that create objects
   private mockEditorState = {} as EditorState;
   private mockEditorView = {} as EditorView;
 
-  // Spies for all methods used by Manager
   createEditorState = jasmine.createSpy('createEditorState').and.returnValue(Promise.resolve(this.mockEditorState));
   createEditorView = jasmine.createSpy('createEditorView').and.returnValue(this.mockEditorView);
   reconfigureEditor = jasmine.createSpy('reconfigureEditor').and.returnValue(Promise.resolve());
@@ -26,26 +23,25 @@ class MockCodeMirrorSetup {
 
 describe('Manager', () => {
   let manager: Manager;
-  let mockCodeMirrorSetup: MockCodeMirrorSetup; // ✅ Renombrado para claridad
+  let mockCodeMirrorSetup: MockCodeMirrorSetup;
   const mockParent = document.createElement('div');
   const mockConfig: Partial<EditorConfig> = { language: 'typescript' };
   const initialContent = 'console.log("hello")';
   const updateCallback = jasmine.createSpy('updateCallback');
 
   beforeEach(() => {
-    mockCodeMirrorSetup = new MockCodeMirrorSetup(); // ✅ Crear instancia antes
+    mockCodeMirrorSetup = new MockCodeMirrorSetup();
 
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         Manager,
-        { provide: CodeMirrorSetup, useValue: mockCodeMirrorSetup }, // ✅ useValue con el token real
+        { provide: CodeMirrorSetup, useValue: mockCodeMirrorSetup },
       ],
     });
 
     manager = TestBed.inject(Manager);
 
-    // Reset all spies before each test
     mockCodeMirrorSetup.createEditorState.calls.reset();
     mockCodeMirrorSetup.createEditorView.calls.reset();
     mockCodeMirrorSetup.reconfigureEditor.calls.reset();
@@ -57,13 +53,9 @@ describe('Manager', () => {
     mockCodeMirrorSetup.destroyEditor.calls.reset();
   });
 
-  // --- isEditorInitialized Getter Tests ---
-
   it('should start with isEditorInitialized as false', () => {
     expect(manager.isEditorInitialized).toBeFalse();
   });
-
-  // --- initializeEditor Tests ---
 
   it('should initialize the editor and set the internal state', async () => {
     const view = await manager.initializeEditor(mockParent, mockConfig, initialContent, [], updateCallback);
@@ -73,8 +65,6 @@ describe('Manager', () => {
     expect(manager.isEditorInitialized).toBeTrue();
     expect(view).toBe(mockCodeMirrorSetup.createEditorView.calls.mostRecent().returnValue);
   });
-
-  // --- destroyEditor Tests ---
 
   it('should destroy the editor and reset internal state', async () => {
     await manager.initializeEditor(mockParent, mockConfig, initialContent, [], updateCallback);
@@ -90,8 +80,6 @@ describe('Manager', () => {
     manager.destroyEditor();
     expect(mockCodeMirrorSetup.destroyEditor).not.toHaveBeenCalled();
   });
-
-  // --- Content and Cursor Getters Tests ---
 
   it('should return content from CodeMirrorSetup when editor is initialized', async () => {
     mockCodeMirrorSetup.getEditorContent.and.returnValue('New Code');
@@ -120,8 +108,6 @@ describe('Manager', () => {
     expect(manager.getCursorPosition()).toBeUndefined();
     expect(mockCodeMirrorSetup.getCursorPosition).not.toHaveBeenCalled();
   });
-
-  // --- Reconfiguration Methods Tests ---
 
   it('should call reconfigureEditor on CodeMirrorSetup when editor is initialized', async () => {
     await manager.initializeEditor(mockParent, mockConfig, initialContent, [], updateCallback);
@@ -154,8 +140,6 @@ describe('Manager', () => {
     expect(mockCodeMirrorSetup.changeLineWrapping).toHaveBeenCalledWith(mockView, true);
   });
 
-  // --- changeLanguage Tests (Special Case) ---
-
   it('should call destroyEditor when language changes and editor is initialized', async () => {
     await manager.initializeEditor(mockParent, mockConfig, initialContent, [], updateCallback);
 
@@ -167,12 +151,10 @@ describe('Manager', () => {
     const newLang = 'json' as SupportedLanguage;
     manager.changeLanguage(newLang);
 
-    // ✅ Solo destruye el editor
     expect(mockCodeMirrorSetup.destroyEditor).toHaveBeenCalledTimes(1);
     expect(mockCodeMirrorSetup.destroyEditor).toHaveBeenCalledWith(mockView);
-
-    // ✅ NO llama a changeLanguage porque destroyEditor resetea editorView a null
     expect(mockCodeMirrorSetup.changeLanguage).not.toHaveBeenCalled();
+
     expect(manager.isEditorInitialized).toBeFalse();
   });
 

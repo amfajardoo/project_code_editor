@@ -12,12 +12,10 @@ describe('Autocomplete', () => {
     TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection()] });
     service = TestBed.inject(Autocomplete);
 
-    // Guardar la referencia original de fetch
     originalFetch = globalThis.fetch;
   });
 
   afterEach(() => {
-    // Restaurar fetch original
     globalThis.fetch = originalFetch;
   });
 
@@ -50,7 +48,6 @@ describe('Autocomplete', () => {
     });
 
     it('should proceed with fetch if context is explicit', async () => {
-      // Mock fetch para retornar una sugerencia
       globalThis.fetch = jasmine.createSpy('fetch').and.returnValue(
         Promise.resolve({
           ok: true,
@@ -80,6 +77,7 @@ describe('Autocomplete', () => {
 
       const result = await completionSource(mockContext);
 
+      expect(result).not.toBeNull();
       expect(globalThis.fetch).toHaveBeenCalled();
     });
   });
@@ -251,8 +249,6 @@ describe('Autocomplete', () => {
   });
 });
 
-// Helper function to create a mock CompletionContext
-// Helper function to create a mock CompletionContext
 function createMockContext(text: string, pos: number, explicit: boolean): CompletionContext {
   const doc = Text.of([text]);
   const state = EditorState.create({ doc });
@@ -275,6 +271,6 @@ function createMockContext(text: string, pos: number, explicit: boolean): Comple
     },
     aborted: false,
     addEventListener: () => {},
-    tokenBefore: (types: string[]) => null, // ✅ Agregado
+    tokenBefore: (types: string[]) => null,
   } as CompletionContext;
 }

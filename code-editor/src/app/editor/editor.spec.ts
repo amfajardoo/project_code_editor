@@ -29,7 +29,6 @@ describe('Editor', () => {
   let mockCollaboration: any;
   let mockProvider: MockProvider;
 
-  // ✅ Función helper para crear mocks frescos
   function createMockManager() {
     return {
       isEditorInitialized: false,
@@ -63,7 +62,6 @@ describe('Editor', () => {
   }
 
   beforeEach(async () => {
-    // ✅ Crea instancias frescas antes de cada test
     mockProvider = new MockProvider();
     mockManager = createMockManager();
     mockCollaboration = createMockCollaboration(mockProvider);
@@ -80,7 +78,6 @@ describe('Editor', () => {
     fixture = TestBed.createComponent(Editor);
     component = fixture.componentInstance;
 
-    // Set required input
     fixture.componentRef.setInput('roomId', 'TestRoom');
   });
 
@@ -88,17 +85,13 @@ describe('Editor', () => {
     fixture.destroy();
   });
 
-  // --- Initialization and Lifecycle Tests ---
-
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
   it('should initialize Collaboration service with roomId on init', () => {
-    // ✅ detectChanges dispara los effects
     fixture.detectChanges();
 
-    // ✅ Espera a que se ejecute el effect de forma asíncrona
     fixture.whenStable().then(() => {
       expect(mockCollaboration.initialize).toHaveBeenCalledWith('TestRoom');
     });
@@ -112,10 +105,7 @@ describe('Editor', () => {
     expect(mockManager.destroyEditor).toHaveBeenCalled();
   });
 
-  // --- Asynchronous Initialization Logic (Provider Sync) ---
-
   it('should initialize the CodeMirror editor immediately if the provider is already synced', async () => {
-    // Set up provider to be synced
     mockProvider.synced = true;
 
     fixture.detectChanges();
@@ -128,18 +118,14 @@ describe('Editor', () => {
   it('should wait for the provider sync event before initializing the editor when not synced', async () => {
     fixture.detectChanges();
 
-    // Check that initializeEditor is NOT called immediately
     expect(mockManager.initializeEditor).not.toHaveBeenCalled();
 
-    // Simulate the provider syncing
     mockProvider.simulateSync();
     await fixture.whenStable();
 
     expect(mockManager.initializeEditor).toHaveBeenCalled();
     expect(mockManager.isEditorInitialized).toBeTrue();
   });
-
-  // --- Input Change Effects Tests (manager methods) ---
 
   it('should call manager.changeLanguage when the language input changes after initialization', async () => {
     mockManager.isEditorInitialized = true;
@@ -177,18 +163,14 @@ describe('Editor', () => {
     expect(mockManager.changeLineWrapping).toHaveBeenCalledWith(true);
   });
 
-  // --- Output Emission Tests (Using outputBinding helper) ---
-
   it('should emit contentChange and cursorPositionChange when handleEditorUpdate is called', async () => {
     const emittedContent = signal('');
     const emittedCursorPos = signal(0);
 
-    // ✅ Crear mocks frescos para este test
     const testMockProvider = new MockProvider();
     const testMockManager = createMockManager();
     const testMockCollaboration = createMockCollaboration(testMockProvider);
 
-    // ✅ Configurar los valores que queremos
     testMockManager.getEditorContent.and.returnValue('New Content Here');
     testMockManager.getCursorPosition.and.returnValue(100);
 
@@ -213,10 +195,8 @@ describe('Editor', () => {
     outputFixture.detectChanges();
     await outputFixture.whenStable();
 
-    // Act: Call the update handler
     (outputFixture.componentInstance as any).handleEditorUpdate({} as EditorView);
 
-    // Assert
     expect(emittedContent()).toBe('New Content Here');
     expect(emittedCursorPos()).toBe(100);
 
@@ -226,7 +206,6 @@ describe('Editor', () => {
   it('should emit editorReady output when the editor is initialized', async () => {
     const editorReadyEmitted = signal<boolean>(false);
 
-    // ✅ Crear mocks frescos
     const testMockProvider = new MockProvider();
     testMockProvider.synced = true; // ✅ Pre-sincronizado
     const testMockManager = createMockManager();
@@ -255,8 +234,6 @@ describe('Editor', () => {
 
     outputFixture.destroy();
   });
-
-  // --- Method Tests ---
 
   it('should call mockManager.reconfigureEditor when changeLanguage is called', async () => {
     fixture.detectChanges();
