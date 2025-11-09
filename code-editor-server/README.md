@@ -81,4 +81,4 @@ The Y.js WebSocket server provides real-time collaboration features:
 
 ## Author
 
-![avatar](https://github.com/amfajardoo.png?size=32) [amfajardoo](https://github.com/amfajardoo)
+This project is maintained by ![avatar](https://github.com/amfajardoo.png?size=32) [amfajardoo](https://github.com/amfajardoo).
