@@ -16,6 +16,18 @@ The `src` directory contains the core application logic and components:
 - `main.ts`: The application's entry point.
 - `styles.css`: Global styles for the application.
 
+## Prerequisites
+
+- Node.js v22.x
+- npm v11.x
+- Angular 20.x
+
+## Installation
+
+```bash
+npm install
+```
+
 ## Development
 
 To start the development server, run:
@@ -34,20 +46,10 @@ To build the project for production, run:
 ng build
 ```
 
-Build artifacts will be stored in the `dist/` directory.
-
-## Running Unit Tests
-
-To execute unit tests via [Karma](https://karma-runner.github.io), run:
-
-```bash
-ng test
-```
-
 ## License
 
 [UNLICENSED]
 
 ## Author
 
-This project is maintained by [amfajardoo](https://github.com/amfajardoo).
+This project is maintained by ![avatar](https://github.com/amfajardoo.png?size=32) [amfajardoo](https://github.com/amfajardoo).
