@@ -63,6 +63,21 @@ export class Editor {
     });
   }
 
+  /**
+   * Initializes the CodeMirror editor asynchronously, ensuring collaboration is set up
+   * and synchronized before mounting the view.
+   *
+   * It first initializes the Y.js collaboration provider for the current room ID.
+   * The actual editor view creation (`createEditor`) is triggered only after the
+   * Y.js provider has synchronized its document state (`provider.synced`).
+   *
+   * The editor is configured with collaboration extensions, the AI autocompletion source,
+   * and configuration settings (language, line numbers, etc.).
+   *
+   * @private
+   * @param parent - The HTMLElement where the CodeMirror editor will be mounted.
+   * @returns A Promise that resolves when the editor view has been created and emitted.
+   */
   private async initializeEditor(parent: HTMLElement): Promise<void> {
     this.collaboration.initialize(this.roomId());
 
@@ -110,6 +125,16 @@ export class Editor {
     }
   }
 
+  /**
+   * Handles updates dispatched by the CodeMirror editor view.
+   *
+   * This method is triggered whenever the editor's state changes. It is responsible for:
+   * 1. Retrieving the latest editor content and emitting a `contentChange` event.
+   * 2. Retrieving the current cursor position and emitting a `cursorPositionChange` event.
+   *
+   * @private
+   * @param _view - The CodeMirror `EditorView` instance (not used directly, but ensures callback compatibility).
+   */
   private handleEditorUpdate(_view: EditorView): void {
     const content = this.manager.getEditorContent();
     this.contentChange.emit(content ?? '');
@@ -120,6 +145,16 @@ export class Editor {
     }
   }
 
+  /**
+   * Changes the syntax highlighting language of the current CodeMirror editor.
+   *
+   * This updates the internal language state and calls the editor manager to
+   * reconfigure the editor view with a new set of extensions, primarily updating
+   * the language extension while preserving the collaboration and autocompletion settings.
+   *
+   * @param newLanguage - The `SupportedLanguage` enum value for the new language.
+   * @returns A Promise that resolves when the editor has been reconfigured.
+   */
   async changeLanguage(newLanguage: SupportedLanguage): Promise<void> {
     this.currentLanguage.set(newLanguage);
 
@@ -137,6 +172,14 @@ export class Editor {
     await this.manager.reconfigureEditor(config);
   }
 
+  /**
+   * Cleanup method called when the component is destroyed.
+   *
+   * It ensures a graceful shutdown by:
+   * 1. Disconnecting the collaboration provider from the WebSocket.
+   * 2. Destroying the CodeMirror editor instance to free up resources.
+   * 3. Resetting the initialization flag.
+   */
   ngOnDestroy(): void {
     this.collaboration.disconnect();
     this.manager.destroyEditor();

@@ -23,6 +23,15 @@ export default class Home {
   isValidRoomId = computed(() => this.joinRoomId()?.trim().length >= 3);
   createNewRoomId = signal(generateRandomId());
 
+  /**
+   * Handles the action of joining an existing collaboration room.
+   *
+   * It first checks if the room ID entered by the user (`this.joinRoomId()`) is valid
+   * using `this.isValidRoomId()`. If the ID is valid, it navigates the user to the
+   * editor route, appending the trimmed room ID as a URL parameter.
+   *
+   * Navigation path: `/editor/{roomId}`.
+   */
   joinRoom() {
     if (this.isValidRoomId()) {
       const roomIdToJoin = this.joinRoomId().trim();

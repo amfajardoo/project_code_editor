@@ -58,6 +58,19 @@ export class Collaboration {
     this.ytext = this.ydoc.getText('codemirror');
   }
 
+  /**
+   * Initializes the collaboration provider and connects to the specified room.
+   *
+   * This method creates a new `WebsocketProvider` (Y.js) using the configured
+   * WebSocket URL, the provided `roomId`, and the internal `ydoc`.
+   * It also sets the local user's information (name, color) in the Y.js Awareness state
+   * and sets up an event listener to update the list of connected users whenever
+   * the Awareness state changes (i.e., when users join or leave).
+   *
+   * If the service is already initialized, this method does nothing.
+   *
+   * @param roomId - The unique identifier for the collaboration room to join.
+   */
   initialize(roomId: string): void {
     if (this.isInitialized && this.provider) {
       return;
@@ -82,6 +95,16 @@ export class Collaboration {
     this.isInitialized = true;
   }
 
+  /**
+   * Returns the CodeMirror extensions required for Y.js collaboration.
+   *
+   * This includes the core `yCollab` extension, which binds the CodeMirror editor's
+   * content to the Y.js shared text (`ytext`) and provides cursor/user presence
+   * through the `WebsocketProvider`'s `awareness`.
+   *
+   * @returns An array of CodeMirror `Extension` objects necessary for collaborative editing.
+   * @throws {Error} If collaboration has not been initialized (i.e., `provider` is undefined).
+   */
   getCollaborationExtensions(): Extension[] {
     if (!this.provider) {
       throw new Error('Collaboration must be initialized before getting extensions');
@@ -89,22 +112,55 @@ export class Collaboration {
     return [yCollab(this.ytext, this.provider.awareness)];
   }
 
+  /**
+   * Retrieves the current content of the shared document.
+   *
+   * It converts the Y.js shared text object (`ytext`) to a standard string.
+   *
+   * @returns The full content of the collaborative document as a string.
+   */
   getCurrentContent(): string {
     return this.ytext.toString();
   }
 
+  /**
+   * Gets the Y.js Awareness instance associated with the collaboration provider.
+   *
+   * The Awareness object is used to manage and share non-content state, such as
+   * user cursors, selections, and other presence data.
+   *
+   * @returns The Y.js `Awareness` instance, or `undefined` if the provider has not been initialized.
+   */
   getAwareness(): Awareness | undefined {
     return this.provider?.awareness;
   }
 
+  /**
+   * Gets the underlying Y.js `WebsocketProvider` instance.
+   *
+   * The provider handles the WebSocket connection and synchronization with other clients.
+   *
+   * @returns The `WebsocketProvider` instance, or `undefined` if it has not been initialized.
+   */
   getProvider(): WebsocketProvider | undefined {
     return this.provider;
   }
 
+  /**
+   * Checks the connection status of the collaboration provider's WebSocket.
+   *
+   * @returns `true` if the WebSocket is currently connected, `false` otherwise.
+   */
   isConnected(): boolean {
     return this.provider?.wsconnected ?? false;
   }
 
+  /**
+   * Disconnects the collaboration service.
+   *
+   * This stops the WebSocket connection, destroys the provider instance to free resources,
+   * and resets the internal state.
+   */
   disconnect(): void {
     if (this.provider) {
       this.provider.disconnect();
@@ -114,6 +170,14 @@ export class Collaboration {
     this.isInitialized = false;
   }
 
+  /**
+   * Disconnects from the current collaboration room and immediately reconnects
+   * to a new room.
+   *
+   * This is equivalent to calling `disconnect()` followed by `initialize(newRoomId)`.
+   *
+   * @param newRoomId - The unique identifier of the new collaboration room to join.
+   */
   reconnect(newRoomId: string): void {
     this.disconnect();
     this.initialize(newRoomId);

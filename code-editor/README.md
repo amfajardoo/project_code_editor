@@ -44,6 +44,22 @@ npm start
 
 Open your browser to `http://localhost:4200/`. The application will automatically reload on changes.
 
+## Testing
+
+To execute the unit tests via [Karma](https://karma-runner.github.io), run:
+
+```bash
+ng test
+```
+
+or
+
+```bash
+npm test
+```
+
+This command will open a browser window and automatically run the tests. Results will be displayed in the terminal and in the browser's Karma dashboard.
+
 ## Building
 
 To build the project for production, run:

@@ -26,19 +26,46 @@ export default class EditorView {
   userInfo = this.collaboration.userInfo;
   connectedUsers = this.collaboration.connectedUsers;
 
+  /**
+   * Handler invoked when the editor's content changes.
+   *
+   * It updates the internal reactive state (`this.content`) with the new document content.
+   *
+   * @param content - The complete, updated content of the editor as a string.
+   */
   onContentChange(content: string): void {
     this.content.set(content);
   }
 
+  /**
+   * Handler invoked when the editor's cursor position changes.
+   *
+   * It updates the internal reactive state (`this.cursorPosition`) with the new cursor offset.
+   *
+   * @param position - The numeric character offset of the primary cursor.
+   */
   onCursorChange(position: number): void {
     this.cursorPosition.set(position);
   }
 
+  /**
+   * Handler invoked when the user selects a different language from a UI element (e.g., a `<select>` tag).
+   *
+   * It extracts the new language value from the event target and updates the internal
+   * reactive state (`this.currentLanguage`).
+   *
+   * @param event - The DOM event triggered by the change (e.g., `HTMLSelectElement` change event).
+   */
   onLanguageChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.currentLanguage.set(select.value as SupportedLanguage);
   }
 
+  /**
+   * Navigates the user to the application's root route.
+   *
+   * This is typically used to move the user back to a main dashboard or landing page.
+   */
   goToHome() {
     this.router.navigate(['/']);
   }

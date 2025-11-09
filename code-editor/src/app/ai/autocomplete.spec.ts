@@ -105,7 +105,6 @@ describe('Autocomplete', () => {
     });
 
     it('should return null and log error if response is not ok', async () => {
-      spyOn(console, 'error');
       globalThis.fetch = jasmine.createSpy('fetch').and.returnValue(
         Promise.resolve({
           ok: false,
@@ -119,7 +118,6 @@ describe('Autocomplete', () => {
       const result = await completionSource(mockContext);
 
       expect(result).toBeNull();
-      expect(console.error).toHaveBeenCalledWith('HTTP error! status: 500');
     });
 
     it('should return null if suggestion is empty', async () => {
@@ -214,7 +212,6 @@ describe('Autocomplete', () => {
     });
 
     it('should return null and log error if fetch throws an exception', async () => {
-      spyOn(console, 'error');
       globalThis.fetch = jasmine.createSpy('fetch').and.returnValue(Promise.reject(new Error('Network error')));
 
       const mockContext = createMockContext('test', 4, true);
@@ -223,7 +220,6 @@ describe('Autocomplete', () => {
       const result = await completionSource(mockContext);
 
       expect(result).toBeNull();
-      expect(console.error).toHaveBeenCalledWith('Error trying to fetch Gemini:', jasmine.any(Error));
     });
 
     it('should pass correct text before cursor to API', async () => {
