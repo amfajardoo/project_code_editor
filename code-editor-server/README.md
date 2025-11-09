@@ -58,13 +58,6 @@ To run both the NestJS server and Y.js WebSocket server concurrently:
 npm run start:dev
 ```
 
-### Production Mode
-
-```bash
-npm run build
-npm run start:prod
-```
-
 ## API Endpoints
 
 ### Code Completion
@@ -88,4 +81,4 @@ The Y.js WebSocket server provides real-time collaboration features:
 
 ## Author
 
-This project is maintained by [amfajardoo].
+![avatar](https://github.com/amfajardoo.png?size=32) [amfajardoo](https://github.com/amfajardoo)
