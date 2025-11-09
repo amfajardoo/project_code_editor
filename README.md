@@ -49,14 +49,33 @@ The editor is built on a modern full-stack architecture that ensures **real-time
 ### Interaction Diagram
 ```mermaid
 graph TD
-    A["Angular Frontend User 1"] -->|WebSocket / y-websocket| B["NestJS + Node.js Server"]
-    C["Angular Frontend User 2"] -->|WebSocket / y-websocket| B
-    B -->|Sync Code Changes Yjs| A
-    B -->|Sync Code Changes Yjs| C
-    A -->|HTTP POST /api/complete| D["Gemini API Proxy"]
-    D -->|"google generative-ai SDK"| E["Google Gemini API"]
-    E -->|Code Suggestion| D
-    D -->|Completion Payload| A
+subgraph Frontend_Clients
+A["Angular Client (User 1)"]
+C["Angular Client (User 2)"]
+end
+
+subgraph Backend_Services_CoLocated
+direction LR
+B_COL["Collaboration Server (yjs-websocket)"]
+B_API["API/Completion Server (NestJS/Node.js)"]
+end
+
+subgraph External_Services
+D["Gemini API Proxy"]
+E["Google Gemini API"]
+end
+
+A -->|WebSocket / y-websocket| B_COL
+C -->|WebSocket / y-websocket| B_COL
+B_COL -->|Yjs Code Synchronization| A
+B_COL -->|Yjs Code Synchronization| C
+
+A -->|HTTP POST /api/complete| B_API
+B_API -->|Request to Proxy| D
+D -->|google-gen-ai SDK| E
+E -->|Code Suggestion| D
+D -->|Completion Payload| B_API
+B_API -->|Completion Payload| A
 ```
 
 ## ✨ Features Highlight
