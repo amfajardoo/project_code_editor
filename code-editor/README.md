@@ -36,6 +36,12 @@ To start the development server, run:
 ng serve
 ```
 
+or
+
+```bash
+npm start
+```
+
 Open your browser to `http://localhost:4200/`. The application will automatically reload on changes.
 
 ## Building
