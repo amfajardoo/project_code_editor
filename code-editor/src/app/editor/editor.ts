@@ -18,7 +18,7 @@ export class Editor {
   private collaboration = inject(Collaboration);
 
   editorContainer = viewChild<ElementRef<HTMLElement>>('editorContainer');
-  
+
   language = input<SupportedLanguage>('javascript');
   lineNumbers = input<boolean>(true);
   lineWrapping = input<boolean>(false);
@@ -26,11 +26,11 @@ export class Editor {
   roomId = input.required<string>();
 
   currentLanguage = linkedSignal(this.language);
-  
+
   contentChange = output<string>();
   cursorPositionChange = output<number>();
   editorReady = output<EditorView>();
-  
+
   private editorInitialized = false;
 
   constructor() {

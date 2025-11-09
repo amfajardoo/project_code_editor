@@ -49,6 +49,7 @@ code-editor/dist/
 code-editor/.angular/
 code-editor/.angular/cache/
 code-editor/.tsbuildinfo
+code-editor/coverage/
 
 # Angular builder cache
 code-editor/.swcrc
