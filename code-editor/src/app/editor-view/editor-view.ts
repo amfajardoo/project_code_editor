@@ -1,8 +1,17 @@
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import { Component, computed, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  type InputSignal,
+  inject,
+  input,
+  type Signal,
+  signal,
+  type WritableSignal,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import type { SupportedLanguage } from '../code-mirror/config';
-import { Collaboration } from '../editor/collaboration';
+import { Collaboration, type UserInfo } from '../editor/collaboration';
 import { Editor } from '../editor/editor';
 
 @Component({
@@ -12,19 +21,75 @@ import { Editor } from '../editor/editor';
   styleUrl: './editor-view.css',
 })
 export default class EditorView {
-  private router = inject(Router);
-  roomId = input.required<string>();
-  currentLanguage = signal('typescript');
-  cursorPosition = signal(0);
-  content = signal('');
-  contentLength = computed(() => this.content().length);
-  lineCount = computed(() => this.content().split('\n').length);
-  copied = signal(false);
+  /**
+   * Router service injected for navigation.
+   * @private
+   * @readonly
+   * @type {Router}
+   */
+  private router: Router = inject(Router);
 
-  private collaboration = inject(Collaboration);
+  /**
+   * The ID of the collaborative room, required as an input property.
+   * @type {InputSignal<string>}
+   */
+  roomId: InputSignal<string> = input.required<string>();
 
-  userInfo = this.collaboration.userInfo;
-  connectedUsers = this.collaboration.connectedUsers;
+  /**
+   * A signal holding the currently selected programming language for the editor (e.g., 'typescript').
+   * @type {WritableSignal<SupportedLanguage>}
+   */
+  currentLanguage: WritableSignal<SupportedLanguage> = signal<SupportedLanguage>('typescript');
+
+  /**
+   * A signal holding the current position of the cursor within the editor content.
+   * @type {WritableSignal<number>}
+   */
+  cursorPosition: WritableSignal<number> = signal(0);
+
+  /**
+   * A signal holding the current text content of the editor.
+   * @type {WritableSignal<string>}
+   */
+  content: WritableSignal<string> = signal('');
+
+  /**
+   * A computed signal that calculates the total length (number of characters) of the editor content.
+   * @type {Signal<number>}
+   */
+  contentLength: Signal<number> = computed(() => this.content().length);
+
+  /**
+   * A computed signal that calculates the number of lines in the editor content.
+   * @type {Signal<number>}
+   */
+  lineCount: Signal<number> = computed(() => this.content().split('\n').length);
+
+  /**
+   * A signal indicating whether the editor content has recently been copied to the clipboard.
+   * @type {Signal<boolean>}
+   */
+  copied: Signal<boolean> = signal(false);
+
+  /**
+   * The collaboration service injected for real-time data handling.
+   * @private
+   * @readonly
+   * @type {Collaboration}
+   */
+  private collaboration: Collaboration = inject(Collaboration);
+
+  /**
+   * A signal or observable holding the current user's information, retrieved from the collaboration service.
+   * @type {WritableSignal<UserInfo>}
+   */
+  userInfo: WritableSignal<UserInfo> = this.collaboration.userInfo;
+
+  /**
+   * A signal or observable holding a map or array of users currently connected to the room.
+   * @type {WritableSignal<UserInfo[]>}
+   */
+  connectedUsers: WritableSignal<UserInfo[]> = this.collaboration.connectedUsers;
 
   /**
    * Handler invoked when the editor's content changes.

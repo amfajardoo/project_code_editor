@@ -24,27 +24,94 @@ import {
   rectangularSelection,
 } from '@codemirror/view';
 
+/**
+ * Represents a string alias for any supported programming language name (e.g., 'typescript', 'javascript', 'python').
+ */
 export type SupportedLanguage = string;
 
+/**
+ * Defines the precise location of the cursor within the editor content.
+ * @interface
+ */
 export interface CursorPosition {
+  /**
+   * The 1-based line number where the cursor is located.
+   * @type {number}
+   */
   line: number;
+  /**
+   * The 0-based column index (character position) on the current line.
+   * @type {number}
+   */
   column: number;
+  /**
+   * The absolute 0-based character offset from the start of the document.
+   * @type {number}
+   */
   pos: number;
 }
 
+/**
+ * Defines the configuration settings for the CodeMirror editor component.
+ * @interface
+ */
 export interface EditorConfig {
+  /**
+   * The programming language used for syntax highlighting and language extensions.
+   * @type {SupportedLanguage}
+   */
   language: SupportedLanguage;
+  /**
+   * Whether line numbers should be displayed in the gutter.
+   * @type {boolean}
+   */
   lineNumbers: boolean;
+  /**
+   * Whether text should wrap to the next line when it exceeds the editor width.
+   * @type {boolean}
+   */
   lineWrapping: boolean;
+  /**
+   * Whether the line where the cursor is currently placed should be visually highlighted.
+   * @type {boolean}
+   */
   highlightActiveLine: boolean;
+  /**
+   * The number of spaces a tab character represents.
+   * @type {number}
+   */
   tabSize: number;
+  /**
+   * Optional array of CodeMirror extensions to apply to the editor view.
+   * @type {Extension[] | undefined}
+   */
   extensions?: Extension[];
 }
 
+/**
+ * Defines the context required by an external service (like an AI model) to generate code completions.
+ * @interface
+ */
 export interface CompletionContext {
+  /**
+   * The full code content of the editor.
+   * @type {string}
+   */
   code: string;
+  /**
+   * The absolute position of the cursor within the `code` string.
+   * @type {number}
+   */
   cursorPosition: number;
+  /**
+   * The text of the line where the cursor is currently located.
+   * @type {string}
+   */
   lineContext: string;
+  /**
+   * The characters immediately preceding the cursor on the current line that might form a word fragment (the completion target).
+   * @type {string}
+   */
   prefix: string;
 }
 

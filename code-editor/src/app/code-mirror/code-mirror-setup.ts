@@ -8,10 +8,33 @@ import { getLanguageExtension } from './language.config';
   providedIn: 'root',
 })
 export class CodeMirrorSetup {
-  #languageCompartment = new Compartment();
-  #tabSizeCompartment = new Compartment();
-  #lineWrappingCompartment = new Compartment();
-  #extensionCompartment = new Compartment();
+  /**
+   * A CodeMirror Compartment used to dynamically manage and update the editor's language extension.
+   * @private
+   * @type {Compartment}
+   */
+  #languageCompartment: Compartment = new Compartment();
+
+  /**
+   * A CodeMirror Compartment used to dynamically manage and update the editor's tab size and indentation settings.
+   * @private
+   * @type {Compartment}
+   */
+  #tabSizeCompartment: Compartment = new Compartment();
+
+  /**
+   * A CodeMirror Compartment used to dynamically manage and update the editor's line wrapping setting.
+   * @private
+   * @type {Compartment}
+   */
+  #lineWrappingCompartment: Compartment = new Compartment();
+
+  /**
+   * A CodeMirror Compartment used to dynamically manage and update custom editor extensions (e.g., autocompletion, linting).
+   * @private
+   * @type {Compartment}
+   */
+  #extensionCompartment: Compartment = new Compartment();
 
   /**
    * Creates and returns a new EditorState configured with extensions built from the given configuration

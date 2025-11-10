@@ -1,4 +1,17 @@
-import { Component, type ElementRef, effect, inject, input, linkedSignal, output, viewChild } from '@angular/core';
+import {
+  Component,
+  type ElementRef,
+  effect,
+  type InputSignal,
+  inject,
+  input,
+  linkedSignal,
+  type OutputEmitterRef,
+  output,
+  type Signal,
+  viewChild,
+  type WritableSignal,
+} from '@angular/core';
 import { autocompletion } from '@codemirror/autocomplete';
 import type { EditorView } from '@codemirror/view';
 import { Autocomplete } from '../ai/autocomplete';
@@ -13,27 +26,121 @@ import { Manager } from './manager';
   styleUrl: './editor.css',
 })
 export class Editor {
-  private autocomplete = inject(Autocomplete);
-  private manager = inject(Manager);
-  private collaboration = inject(Collaboration);
+  /**
+   * Injected service providing auto-completion functionality for the editor.
+   * @private
+   * @readonly
+   * @type {Autocomplete}
+   */
+  private autocomplete: Autocomplete = inject(Autocomplete);
 
-  editorContainer = viewChild<ElementRef<HTMLElement>>('editorContainer');
+  /**
+   * Injected service managing high-level editor operations and state.
+   * @private
+   * @readonly
+   * @type {Manager}
+   */
+  private manager: Manager = inject(Manager);
 
-  language = input<SupportedLanguage>('javascript');
-  lineNumbers = input<boolean>(true);
-  lineWrapping = input<boolean>(false);
-  tabSize = input<number>(2);
-  roomId = input.required<string>();
+  /**
+   * Injected service handling real-time collaboration via Yjs/WebSockets.
+   * @private
+   * @readonly
+   * @type {Collaboration}
+   */
+  private collaboration: Collaboration = inject(Collaboration);
 
-  currentLanguage = linkedSignal(this.language);
+  /**
+   * A ViewChild reference to the DOM element where the CodeMirror editor should be mounted.
+   * @type {Signal<ElementRef<HTMLElement> | undefined>}
+   */
+  editorContainer: Signal<ElementRef<HTMLElement> | undefined> = viewChild<ElementRef<HTMLElement>>('editorContainer');
 
-  contentChange = output<string>();
-  cursorPositionChange = output<number>();
-  editorReady = output<EditorView>();
+  /**
+   * Input property defining the programming language for syntax highlighting and extensions.
+   * @type {InputSignal<SupportedLanguage>}
+   * @default 'javascript'
+   */
+  language: InputSignal<SupportedLanguage> = input<SupportedLanguage>('javascript');
 
-  private editorInitialized = false;
+  /**
+   * Input property controlling the visibility of line numbers in the editor gutter.
+   * @type {InputSignal<boolean>}
+   * @default true
+   */
+  lineNumbers: InputSignal<boolean> = input<boolean>(true);
 
+  /**
+   * Input property controlling whether lines should wrap when they exceed the editor width.
+   * @type {InputSignal<boolean>}
+   * @default false
+   */
+  lineWrapping: InputSignal<boolean> = input<boolean>(false);
+
+  /**
+   * Input property defining the number of spaces represented by a tab.
+   * @type {InputSignal<number>}
+   * @default 2
+   */
+  tabSize: InputSignal<number> = input<number>(2);
+
+  /**
+   * Required input property specifying the unique identifier of the collaborative room.
+   * @type {InputSignal<string>}
+   */
+  roomId: InputSignal<string> = input.required<string>();
+
+  /**
+   * A signal that is linked to the `language` input, allowing the component to react to external changes.
+   * @type {WritableSignal<SupportedLanguage>}
+   */
+  currentLanguage: WritableSignal<SupportedLanguage> = linkedSignal(this.language);
+
+  /**
+   * Output event emitter triggered when the content of the editor changes.
+   * Emits the new content string.
+   * @type {OutputEmitterRef<string>}
+   */
+  contentChange: OutputEmitterRef<string> = output<string>();
+
+  /**
+   * Output event emitter triggered when the cursor position changes.
+   * Emits the new cursor position (offset).
+   * @type {OutputEmitterRef<number>}
+   */
+  cursorPositionChange: OutputEmitterRef<number> = output<number>();
+
+  /**
+   * Output event emitter triggered once the CodeMirror `EditorView` is fully initialized and ready.
+   * Emits the initialized `EditorView` instance.
+   * @type {OutputEmitterRef<EditorView>}
+   */
+  editorReady: OutputEmitterRef<EditorView> = output<EditorView>();
+
+  /**
+   * Flag indicating whether the CodeMirror editor has completed its initial setup.
+   * @private
+   * @type {boolean}
+   * @default false
+   */
+  private editorInitialized: boolean = false;
+
+  /**
+   * @constructor
+   * Initializes the component and sets up reactive effects to manage the CodeMirror editor's lifecycle
+   * and configuration based on signal and input changes.
+   *
+   * It establishes the following reactive processes:
+   * 1. Editor Initialization: Watches the `editorContainer` reference and initializes the CodeMirror view when the element is available in the DOM.
+   * 2. Language Change: Reacts to changes in the `language` input and updates the editor's syntax highlighting.
+   * 3. Tab Size Change: Reacts to changes in the `tabSize` input and updates the editor's tab configuration.
+   * 4. Line Wrapping Change: Reacts to changes in the `lineWrapping` input and updates the editor's text display mode.
+   */
   constructor() {
+    /**
+     * Effect 1: Editor Initialization.
+     * Initializes the CodeMirror editor when the 'editorContainer' DOM element reference becomes available.
+     */
     effect(() => {
       const element = this.editorContainer();
       if (element) {
@@ -41,6 +148,11 @@ export class Editor {
       }
     });
 
+    /*
+     * Effect 2: Language Change Reaction.
+     * Watches the 'language' input and calls the manager service to apply the new language mode
+     * and syntax extensions to the editor.
+     */
     effect(() => {
       const newLanguage = this.language();
       if (this.manager.isEditorInitialized) {
@@ -48,6 +160,10 @@ export class Editor {
       }
     });
 
+    /*
+     * Effect 3: Tab Size Change Reaction.
+     * Watches the 'tabSize' input and updates the editor's tab configuration.
+     */
     effect(() => {
       const size = this.tabSize();
       if (this.manager.isEditorInitialized) {
@@ -55,6 +171,10 @@ export class Editor {
       }
     });
 
+    /*
+     * Effect 4: Line Wrapping Change Reaction.
+     * Watches the 'lineWrapping' input and updates the editor's line wrapping setting.
+     */
     effect(() => {
       const wrapping = this.lineWrapping();
       if (this.manager.isEditorInitialized) {

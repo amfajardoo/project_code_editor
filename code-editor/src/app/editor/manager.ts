@@ -8,11 +8,37 @@ import type { EditorConfig, SupportedLanguage } from '../code-mirror/config';
   providedIn: 'root',
 })
 export class Manager {
-  private codeMirrorSetup = inject(CodeMirrorSetup);
+  /**
+   * Injected service responsible for configuring CodeMirror extensions, themes, and settings.
+   * @private
+   * @readonly
+   * @type {CodeMirrorSetup}
+   */
+  private codeMirrorSetup: CodeMirrorSetup = inject(CodeMirrorSetup);
 
+  /**
+   * The active view instance of the CodeMirror editor.
+   * It is undefined until the editor is initialized.
+   * @private
+   * @type {EditorView | undefined}
+   */
   private editorView?: EditorView;
+
+  /**
+   * The state instance of the CodeMirror editor, defining the document, configuration, and extensions.
+   * It is undefined until the editor is initialized.
+   * @private
+   * @type {EditorState | undefined}
+   */
   private editorState?: EditorState;
-  private isInitialized = false;
+
+  /**
+   * A flag indicating whether the CodeMirror editor has been successfully initialized and mounted.
+   * @private
+   * @type {boolean}
+   * @default false
+   */
+  private isInitialized: boolean = false;
 
   /**
    * Creates and initializes a new CodeMirror EditorView.

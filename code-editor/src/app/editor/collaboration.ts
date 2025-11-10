@@ -1,12 +1,23 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, type WritableSignal } from '@angular/core';
 import type { Extension } from '@codemirror/state';
 import { yCollab } from 'y-codemirror.next';
 import type { Awareness } from 'y-protocols/awareness';
 import { WebsocketProvider } from 'y-websocket';
 import * as Y from 'yjs';
 
-const YJS_WEBSOCKET_URL = 'ws://localhost:1234';
+/**
+ * The WebSocket URL used to connect to the Yjs collaboration server.
+ * @constant
+ * @type {string}
+ */
+const YJS_WEBSOCKET_URL: string = 'ws://localhost:1234';
 
+/**
+ * Generates a random hexadecimal color code from a predefined list.
+ * This color is typically used to represent a user's cursor or presence in a collaborative editor.
+ *
+ * @returns {string} A random color code in hexadecimal format (e.g., '#FF6B6B').
+ */
 function getRandomColor(): string {
   const colors = [
     '#FF6B6B',
@@ -23,6 +34,12 @@ function getRandomColor(): string {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
+/**
+ * Generates a random, user-friendly name composed of an adjective and an animal.
+ * This name is used to identify a user in the collaborative session.
+ *
+ * @returns {string} A random name (e.g., 'Clever Fox').
+ */
 function getRandomName(): string {
   const adjectives = ['Happy', 'Clever', 'Brave', 'Swift', 'Bright', 'Cool', 'Smart', 'Quick'];
   const animals = ['Panda', 'Tiger', 'Eagle', 'Dolphin', 'Fox', 'Wolf', 'Bear', 'Hawk'];
@@ -41,18 +58,65 @@ export interface UserInfo {
   providedIn: 'root',
 })
 export class Collaboration {
+  /**
+   * The core Yjs document instance, holding the shared data structure.
+   * @private
+   * @type {Y.Doc}
+   */
   private ydoc: Y.Doc;
+
+  /**
+   * The Yjs WebSocket provider instance, handling synchronization with the server.
+   * It is undefined until the collaboration session is started.
+   * @private
+   * @type {WebsocketProvider | undefined}
+   */
   private provider?: WebsocketProvider;
+
+  /**
+   * The shared Yjs text type, used to store the code content and bind it to the editor.
+   * Mapped to the key 'codemirror' within the Y.Doc.
+   * @private
+   * @type {Y.Text}
+   */
   private ytext: Y.Text;
-  private isInitialized = false;
-  private color = getRandomColor();
-  connectedUsers = signal<UserInfo[]>([]);
-  userInfo = signal<UserInfo>({
+
+  /**
+   * Flag indicating whether the collaboration session (WebsocketProvider) has been successfully initialized.
+   * @private
+   * @type {boolean}
+   * @default false
+   */
+  private isInitialized: boolean = false;
+
+  /**
+   * The randomly generated color assigned to the current user for visual representation (e.g., cursor color).
+   * @private
+   * @type {string}
+   */
+  private color: string = getRandomColor();
+
+  /**
+   * A signal holding the list of other users currently connected and active in the same room.
+   * @type {WritableSignal<UserInfo[]>}
+   */
+  connectedUsers: WritableSignal<UserInfo[]> = signal<UserInfo[]>([]);
+
+  /**
+   * A signal holding the current user's unique identity information.
+   * This includes a generated name, a primary color, and a light version of the color.
+   * @type {WritableSignal<UserInfo>}
+   */
+  userInfo: WritableSignal<UserInfo> = signal<UserInfo>({
     name: getRandomName(),
     color: this.color,
     colorLight: `${this.color}33`,
   });
 
+  /**
+   * @constructor
+   * Initializes the core Yjs document and retrieves the shared Y.Text type for the editor content.
+   */
   constructor() {
     this.ydoc = new Y.Doc();
     this.ytext = this.ydoc.getText('codemirror');
