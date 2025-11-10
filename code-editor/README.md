@@ -28,6 +28,12 @@ The `src` directory contains the core application logic and components:
 npm install
 ```
 
+## Configuration
+
+This frontend application does not require any environment variables or additional configuration.  
+All backend URLs and editor settings are already included in the project defaults.
+
+
 ## Development
 
 To start the development server, run:
