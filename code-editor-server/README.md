@@ -32,6 +32,14 @@ GEMINI_API_KEY="your_api_key_here"
 PORT=3000  # optional, defaults to 3000
 ```
 
+## Y.js WebSocket Server
+The Y.js WebSocket collaboration server runs independently on port **1234**.
+
+- URL: `ws://localhost:1234`
+- It is automatically started when running `npm run start:dev`.
+- Each collaborative session is identified by the room ID included in the WebSocket URL path.
+
+
 ### Getting the Gemini API Key
 
 1. Visit [Google AI Studio](https://aistudio.google.com/)
