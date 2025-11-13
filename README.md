@@ -110,8 +110,9 @@ The frontend uses the **`@codemirror/autocomplete`** package to display suggesti
 Here is the flow:
 
 1. **Trigger:** The user types or triggers autocomplete (e.g., Ctrl+Space).
+   * **Trigger Logic:** The suggestion is only attempted if the autocompletion is explicit (context.explicit is true) or if the text immediately preceding the cursor matches a word boundary (/\w+$/). If it's not explicit and there's no word in progress, it immediately returns null.
 
-2. **Request:** The custom CompletionSource in Angular makes an HTTP request to the backend's **`POST /api/complete endpoint`**, sending the current code context.
+2. **Request:** The custom CompletionSource in Angular makes an HTTP request to the backend's **`POST /api/complete endpoint`**, sending the current code context before the cursor **`(state.doc.sliceString(0, pos))`**.
 
 3. **Backend Response:** The NestJS controller receives the raw string (e.g., **`" console.log(item);\n});")`** from the **`AiService`** and wraps it in a JSON object for the frontend:
 
@@ -121,29 +122,63 @@ Here is the flow:
 }
 ```
 
-4. **Parsing:** The **`CompletionSource`** receives this JSON and must parse it into the format that CodeMirror understands: an array of **`Completion`** objects.
+4. **Parsing & Formatting::** The **`fetchGeminiSuggestion`** method in the **`Autocomplete`** service receives this JSON, validates the **`suggestionText`**, and transforms it into a CodeMirror `**Completion`** object:
+   * **`from`**: Set to the current cursor **`position`** for insertion.
+   * **`apply`**: Contains the full suggestion text (**`suggestionText`**) to be inserted.
+   * **`label`**: Displays a truncated version of the suggestion (max 50 characters) in the dropdown list.
+   * **`detail`** and **`info`** fields are added for better user context, indicating it is a Gemini AI completion.
 
 ```typescript
-// Inside the custom CompletionSource...
-async function getCompletions(context) {
-  // Fetches { suggestion: "..." } from the backend
-  const { suggestion } = await myApiService.getAiSuggestion(context.state.doc.toString());
+private async fetchGeminiSuggestion(
+    codeContext: string,
+    position: number
+  ): Promise<{ from: number; options: Completion[] } | null> {
+  try {
+    // 1. Make the POST request to the backend proxy (NestJS)
+    const response = await fetch(GEMINI_PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Send the code before the cursor as context for Gemini
+      body: JSON.stringify({ codeContext }),
+    });
 
-  if (!suggestion) {
-    return null; // No suggestion, show nothing
-  }
+    // 2. Handle failed response (e.g., 500 backend error)
+    if (!response.ok) {
+      return null;
+    }
 
-  // Transform the simple string response into a CodeMirror Completion object
-  return {
-    from: context.pos,
-    options: [
-      {
-        label: suggestion, // What the user sees in the list
-        apply: suggestion, // What is inserted when selected
-        type: "ai"         // Custom type for styling
-      }
-    ]
-  };
+    // 3. Process the JSON response from the backend and extract the suggestion
+    const data = await response.json();
+    // Expects an object like { suggestion: "..." }
+    const suggestionText: string = data.suggestion || '';
+
+    // 4. If the backend returned no text (error or no suggestion), return null
+      if (!suggestionText) return null;
+
+    // 5. Construct the CodeMirror Completion object
+    const suggestion: Completion = {
+      // 'label': What is shown in the suggestions list. It is truncated if too long.
+      label: suggestionText.length > 50 ? `${suggestionText.substring(0, 50)}...` : suggestionText,
+      // Additional information shown in the interface (optional)
+      detail: 'Gemini AI Completion',
+      info: 'Suggestion provided by Gemini AI',
+      // 'apply': The complete text that is inserted into the editor when the suggestion is selected.
+      apply: suggestionText,
+      // 'type': CSS class or semantic type for styling (e.g., 'keyword', 'variable')
+      type: 'keyword',
+    };
+
+    // 6. Return the result in the format CodeMirror expects
+    return {
+      // 'from': Indicates the starting position to insert the text (the current cursor position)
+      from: position,
+      // 'options': An array of Completion objects (only one in this case)
+      options: [suggestion],
+    };
+  } catch (_error) {
+    // Catch network or parsing errors and return null to prevent CodeMirror from crashing
+    return null;
+  }
 }
 ```
 
